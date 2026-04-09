@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscription — École SerineRomane</title>
+  <link rel="stylesheet" href="MonStyle.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="hdr-circle"></div>
+    <div class="hdr-circle2"></div>
+    <div class="hdr-inner">
+      <div class="hdr-badge">Inscription</div>
+      <div class="hdr-title">Votre <span>devis</span></div>
+      <div class="hdr-sub">Sélectionnez votre formation et obtenez un tarif instantané et personnalisé.</div>
+      <a href="index.html" class="back-link">← Retour à l'accueil</a>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <div class="insc-grid">
+
+      <!-- Formulaire -->
+      <div class="form-wrap">
+        <div class="form-head">
+          <div class="form-head-title">Formulaire d'inscription</div>
+          <div class="form-head-sub">Tous les champs sont pris en compte pour le calcul du devis.</div>
+        </div>
+        <div class="form-body">
+
+          <div class="alert-box">
+            Les cours du soir sont majorés de 10 % par rapport au tarif standard.
+          </div>
+
+          <div class="fg">
+            <label class="fg-lbl" for="prenom">Prénom</label>
+            <input class="fg-inp" type="text" id="prenom" name="prenom" placeholder="Votre prénom">
+          </div>
+
+          <div class="fg">
+            <label class="fg-lbl">Formation souhaitée</label>
+            <div class="r-stack">
+              <label class="r-opt" onclick="selectCard(this)">
+                <span class="r-left"><input type="radio" name="formation" value="1200" data-nom="Développement Web"> Développement Web</span>
+                <span class="r-price">1 200 €</span>
+              </label>
+              <label class="r-opt" onclick="selectCard(this)">
+                <span class="r-left"><input type="radio" name="formation" value="900" data-nom="Design Graphique"> Design Graphique</span>
+                <span class="r-price">900 €</span>
+              </label>
+              <label class="r-opt" onclick="selectCard(this)">
+                <span class="r-left"><input type="radio" name="formation" value="800" data-nom="Marketing Digital"> Marketing Digital</span>
+                <span class="r-price">800 €</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="fg">
+            <label class="fg-lbl">Options</label>
+            <label class="chk-opt">
+              <span>Cours du soir</span>
+              <span class="chk-right">+10 % <input type="checkbox" id="soir" name="cours_soir"></span>
+            </label>
+          </div>
+
+          <div class="fg">
+            <label class="fg-lbl" for="participants">Nombre de participants</label>
+            <input class="fg-inp" type="number" id="participants" name="participants" min="1" value="1" style="width:130px">
+          </div>
+
+          <button class="btn-calcul" type="button" onclick="calculerDevis()">Calculer le devis</button>
+
+        </div>
+      </div>
+
+      <!-- Sidebar devis -->
+      <div class="devis-wrap">
+        <div class="devis-top">
+          <div class="devis-top-title">Devis estimé</div>
+          <div class="devis-top-sub">Mis à jour en temps réel</div>
+        </div>
+        <div class="devis-body">
+          <div class="devis-empty" id="devis-empty">
+            <div class="devis-empty-line"></div>
+            <div class="devis-empty-txt">Remplissez le formulaire<br>pour voir votre devis apparaître ici.</div>
+          </div>
+          <div class="devis-res" id="devis-res">
+            <div class="devis-amount-row">
+              <span class="devis-amount" id="devis-montant"></span>
+              <span class="devis-eur">€</span>
+            </div>
+            <div class="devis-rows">
+              <div class="d-row"><span class="d-lbl">Formation</span><span class="d-val" id="d-nom"></span></div>
+              <div class="d-row"><span class="d-lbl">Participants</span><span class="d-val" id="d-nb"></span></div>
+              <div class="d-row" id="d-soir-row" style="display:none"><span class="d-lbl">Cours du soir</span><span class="d-val blue">+10 %</span></div>
+            </div>
+            <div class="devis-name" id="d-name" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    © 2025 École SerineRomane — Tous droits réservés
+  </footer>
+
+  <script>
+    function selectCard(el) {
+      document.querySelectorAll('.r-opt').forEach(c => c.classList.remove('sel'));
+      el.classList.add('sel');
+      setTimeout(() => {
+        if (document.querySelector('input[name="formation"]:checked')) calculerDevis();
+      }, 40);
+    }
+
+    function calculerDevis() {
+      const prenom = document.getElementById('prenom').value.trim();
+      const sel = document.querySelector('input[name="formation"]:checked');
+      const soir = document.getElementById('soir').checked;
+      const nb = Math.max(1, parseInt(document.getElementById('participants').value) || 1);
+
+      if (!sel) { alert('Veuillez sélectionner une formation.'); return; }
+
+      let total = parseInt(sel.value) * nb;
+      if (soir) total = Math.round(total * 1.10);
+
+      document.getElementById('devis-montant').textContent = total.toLocaleString('fr-FR');
+      document.getElementById('d-nom').textContent = sel.dataset.nom;
+      document.getElementById('d-nb').textContent = nb + ' participant' + (nb > 1 ? 's' : '');
+      document.getElementById('d-soir-row').style.display = soir ? 'flex' : 'none';
+
+      const nameEl = document.getElementById('d-name');
+      if (prenom) { nameEl.textContent = 'Devis pour ' + prenom; nameEl.style.display = 'block'; }
+      else { nameEl.style.display = 'none'; }
+
+      document.getElementById('devis-empty').style.display = 'none';
+      document.getElementById('devis-res').style.display = 'block';
+    }
+
+    document.querySelectorAll('#soir, #participants').forEach(el => {
+      el.addEventListener('change', () => {
+        if (document.querySelector('input[name="formation"]:checked')) calculerDevis();
+      });
+    });
+  </script>
+
+</body>
+</html>
